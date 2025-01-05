@@ -1,0 +1,1382 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 17.0
+-- Dumped by pg_dump version 17.0
+
+-- Started on 2025-01-05 18:08:18
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 242 (class 1259 OID 17370)
+-- Name: address; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.address (
+    address_id integer NOT NULL,
+    user_id integer NOT NULL,
+    street_address character varying(255) NOT NULL,
+    city character varying(100) NOT NULL,
+    state character varying(100),
+    postal_code character varying(20),
+    country character varying(100)
+);
+
+
+ALTER TABLE public.address OWNER TO postgres;
+
+--
+-- TOC entry 241 (class 1259 OID 17369)
+-- Name: address_address_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.address_address_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.address_address_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5003 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: address_address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.address_address_id_seq OWNED BY public.address.address_id;
+
+
+--
+-- TOC entry 236 (class 1259 OID 17325)
+-- Name: cart; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cart (
+    cart_id integer NOT NULL,
+    user_id integer NOT NULL,
+    meal_id integer NOT NULL,
+    quantity integer NOT NULL,
+    cart_added_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT cart_quantity_check CHECK ((quantity > 0))
+);
+
+
+ALTER TABLE public.cart OWNER TO postgres;
+
+--
+-- TOC entry 235 (class 1259 OID 17324)
+-- Name: cart_cart_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cart_cart_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cart_cart_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5004 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: cart_cart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cart_cart_id_seq OWNED BY public.cart.cart_id;
+
+
+--
+-- TOC entry 228 (class 1259 OID 17240)
+-- Name: coupons; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.coupons (
+    coupon_id integer NOT NULL,
+    code character varying(50),
+    discount_percentage numeric(5,2),
+    expiry_date date NOT NULL,
+    user_id integer,
+    used_in_order_id integer,
+    CONSTRAINT coupons_discount_percentage_check CHECK (((discount_percentage >= (0)::numeric) AND (discount_percentage <= (100)::numeric)))
+);
+
+
+ALTER TABLE public.coupons OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 17239)
+-- Name: coupons_coupon_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.coupons_coupon_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.coupons_coupon_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5005 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: coupons_coupon_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.coupons_coupon_id_seq OWNED BY public.coupons.coupon_id;
+
+
+--
+-- TOC entry 230 (class 1259 OID 17260)
+-- Name: deals; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.deals (
+    deal_id integer NOT NULL,
+    restaurant_id integer NOT NULL,
+    deal_description text,
+    start_date date NOT NULL,
+    end_date date NOT NULL
+);
+
+
+ALTER TABLE public.deals OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 17259)
+-- Name: deals_deal_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.deals_deal_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.deals_deal_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5006 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: deals_deal_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.deals_deal_id_seq OWNED BY public.deals.deal_id;
+
+
+--
+-- TOC entry 240 (class 1259 OID 17356)
+-- Name: deliveryservices; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.deliveryservices (
+    delivery_service_id integer NOT NULL,
+    order_id integer NOT NULL,
+    delivery_service_name character varying(255),
+    delivery_fee numeric(10,2),
+    estimated_delivery_time text
+);
+
+
+ALTER TABLE public.deliveryservices OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 17355)
+-- Name: deliveryservices_delivery_service_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.deliveryservices_delivery_service_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.deliveryservices_delivery_service_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5007 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: deliveryservices_delivery_service_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.deliveryservices_delivery_service_id_seq OWNED BY public.deliveryservices.delivery_service_id;
+
+
+--
+-- TOC entry 234 (class 1259 OID 17300)
+-- Name: favorites; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.favorites (
+    favorite_id integer NOT NULL,
+    user_id integer NOT NULL,
+    restaurant_id integer NOT NULL,
+    menu_id integer NOT NULL,
+    favorite_added_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.favorites OWNER TO postgres;
+
+--
+-- TOC entry 233 (class 1259 OID 17299)
+-- Name: favorites_favorite_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.favorites_favorite_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.favorites_favorite_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5008 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: favorites_favorite_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.favorites_favorite_id_seq OWNED BY public.favorites.favorite_id;
+
+
+--
+-- TOC entry 222 (class 1259 OID 17191)
+-- Name: meals; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.meals (
+    meal_id integer NOT NULL,
+    restaurant_id integer NOT NULL,
+    meal_name character varying(255) NOT NULL,
+    meal_description text,
+    meal_price numeric(10,2) NOT NULL,
+    category character varying(50)
+);
+
+
+ALTER TABLE public.meals OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 17190)
+-- Name: meals_meal_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.meals_meal_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.meals_meal_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5009 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: meals_meal_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.meals_meal_id_seq OWNED BY public.meals.meal_id;
+
+
+--
+-- TOC entry 226 (class 1259 OID 17222)
+-- Name: orderdetails; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.orderdetails (
+    order_detail_id integer NOT NULL,
+    order_id integer NOT NULL,
+    meal_id integer NOT NULL,
+    quantity integer NOT NULL,
+    meal_price numeric(10,2) NOT NULL,
+    CONSTRAINT orderdetails_quantity_check CHECK ((quantity > 0))
+);
+
+
+ALTER TABLE public.orderdetails OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 17221)
+-- Name: orderdetails_order_detail_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.orderdetails_order_detail_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.orderdetails_order_detail_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5010 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: orderdetails_order_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.orderdetails_order_detail_id_seq OWNED BY public.orderdetails.order_detail_id;
+
+
+--
+-- TOC entry 224 (class 1259 OID 17205)
+-- Name: orders; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.orders (
+    order_id integer NOT NULL,
+    user_id integer NOT NULL,
+    restaurant_id integer NOT NULL,
+    order_date timestamp without time zone NOT NULL,
+    total_amount numeric(10,2) NOT NULL,
+    delivery_type character varying(50),
+    payment_method character varying(50),
+    status character varying(50)
+);
+
+
+ALTER TABLE public.orders OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 17204)
+-- Name: orders_order_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.orders_order_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.orders_order_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5011 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: orders_order_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.orders_order_id_seq OWNED BY public.orders.order_id;
+
+
+--
+-- TOC entry 238 (class 1259 OID 17344)
+-- Name: paymentinfo; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.paymentinfo (
+    payment_id integer NOT NULL,
+    user_id integer NOT NULL,
+    card_number character varying(16) NOT NULL,
+    card_holder_name character varying(255) NOT NULL,
+    expiry_date date NOT NULL,
+    cvv_code character varying(3) NOT NULL
+);
+
+
+ALTER TABLE public.paymentinfo OWNER TO postgres;
+
+--
+-- TOC entry 237 (class 1259 OID 17343)
+-- Name: paymentinfo_payment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.paymentinfo_payment_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.paymentinfo_payment_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5012 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: paymentinfo_payment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.paymentinfo_payment_id_seq OWNED BY public.paymentinfo.payment_id;
+
+
+--
+-- TOC entry 220 (class 1259 OID 17182)
+-- Name: restaurants; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.restaurants (
+    restaurant_id integer NOT NULL,
+    restaurant_name character varying(255) NOT NULL,
+    restaurant_description text,
+    location character varying(255),
+    restaurant_rating numeric(3,1),
+    opening_hours character varying(255),
+    deal_title character varying(255),
+    deal_description text,
+    phone character varying(20),
+    restaurant_email character varying(255)
+);
+
+
+ALTER TABLE public.restaurants OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 17181)
+-- Name: restaurants_restaurant_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.restaurants_restaurant_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.restaurants_restaurant_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5013 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: restaurants_restaurant_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.restaurants_restaurant_id_seq OWNED BY public.restaurants.restaurant_id;
+
+
+--
+-- TOC entry 232 (class 1259 OID 17274)
+-- Name: reviews; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.reviews (
+    review_id integer NOT NULL,
+    user_id integer NOT NULL,
+    restaurant_id integer NOT NULL,
+    order_id integer,
+    review_rating numeric(2,1),
+    review_comment text,
+    review_created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT reviews_review_rating_check CHECK (((review_rating >= (1)::numeric) AND (review_rating <= (5)::numeric)))
+);
+
+
+ALTER TABLE public.reviews OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 17273)
+-- Name: reviews_review_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.reviews_review_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.reviews_review_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5014 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: reviews_review_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.reviews_review_id_seq OWNED BY public.reviews.review_id;
+
+
+--
+-- TOC entry 218 (class 1259 OID 17170)
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    user_id integer NOT NULL,
+    fullname character varying(255) NOT NULL,
+    user_email character varying(255) NOT NULL,
+    user_phone_number character varying(20),
+    password character varying(255) NOT NULL,
+    user_created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 17169)
+-- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.users_user_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5015 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_user_id_seq OWNED BY public.users.user_id;
+
+
+--
+-- TOC entry 4771 (class 2604 OID 17373)
+-- Name: address address_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.address ALTER COLUMN address_id SET DEFAULT nextval('public.address_address_id_seq'::regclass);
+
+
+--
+-- TOC entry 4767 (class 2604 OID 17328)
+-- Name: cart cart_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart ALTER COLUMN cart_id SET DEFAULT nextval('public.cart_cart_id_seq'::regclass);
+
+
+--
+-- TOC entry 4761 (class 2604 OID 17243)
+-- Name: coupons coupon_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coupons ALTER COLUMN coupon_id SET DEFAULT nextval('public.coupons_coupon_id_seq'::regclass);
+
+
+--
+-- TOC entry 4762 (class 2604 OID 17263)
+-- Name: deals deal_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.deals ALTER COLUMN deal_id SET DEFAULT nextval('public.deals_deal_id_seq'::regclass);
+
+
+--
+-- TOC entry 4770 (class 2604 OID 17359)
+-- Name: deliveryservices delivery_service_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.deliveryservices ALTER COLUMN delivery_service_id SET DEFAULT nextval('public.deliveryservices_delivery_service_id_seq'::regclass);
+
+
+--
+-- TOC entry 4765 (class 2604 OID 17303)
+-- Name: favorites favorite_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.favorites ALTER COLUMN favorite_id SET DEFAULT nextval('public.favorites_favorite_id_seq'::regclass);
+
+
+--
+-- TOC entry 4758 (class 2604 OID 17194)
+-- Name: meals meal_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.meals ALTER COLUMN meal_id SET DEFAULT nextval('public.meals_meal_id_seq'::regclass);
+
+
+--
+-- TOC entry 4760 (class 2604 OID 17225)
+-- Name: orderdetails order_detail_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orderdetails ALTER COLUMN order_detail_id SET DEFAULT nextval('public.orderdetails_order_detail_id_seq'::regclass);
+
+
+--
+-- TOC entry 4759 (class 2604 OID 17208)
+-- Name: orders order_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders ALTER COLUMN order_id SET DEFAULT nextval('public.orders_order_id_seq'::regclass);
+
+
+--
+-- TOC entry 4769 (class 2604 OID 17347)
+-- Name: paymentinfo payment_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.paymentinfo ALTER COLUMN payment_id SET DEFAULT nextval('public.paymentinfo_payment_id_seq'::regclass);
+
+
+--
+-- TOC entry 4757 (class 2604 OID 17185)
+-- Name: restaurants restaurant_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.restaurants ALTER COLUMN restaurant_id SET DEFAULT nextval('public.restaurants_restaurant_id_seq'::regclass);
+
+
+--
+-- TOC entry 4763 (class 2604 OID 17277)
+-- Name: reviews review_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews ALTER COLUMN review_id SET DEFAULT nextval('public.reviews_review_id_seq'::regclass);
+
+
+--
+-- TOC entry 4755 (class 2604 OID 17173)
+-- Name: users user_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.users_user_id_seq'::regclass);
+
+
+--
+-- TOC entry 4997 (class 0 OID 17370)
+-- Dependencies: 242
+-- Data for Name: address; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.address (address_id, user_id, street_address, city, state, postal_code, country) FROM stdin;
+1	1	123 Main Street	New York	NY	10001	USA
+2	2	456 Elm Road	Los Angeles	CA	90001	USA
+3	3	789 Oak Lane	Chicago	IL	60601	USA
+4	4	101 Pine Street	Houston	TX	77001	USA
+5	5	202 Maple Ave	Phoenix	AZ	85001	USA
+6	6	303 Cedar Court	Philadelphia	PA	19101	USA
+7	7	404 Birch Way	San Antonio	TX	78201	USA
+8	8	505 Walnut Blvd	San Diego	CA	92101	USA
+9	9	606 Chestnut Drive	Dallas	TX	75201	USA
+10	10	707 Aspen Rd	San Jose	CA	95101	USA
+\.
+
+
+--
+-- TOC entry 4991 (class 0 OID 17325)
+-- Dependencies: 236
+-- Data for Name: cart; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cart (cart_id, user_id, meal_id, quantity, cart_added_at) FROM stdin;
+1	1	1	2	2024-12-21 10:00:00
+2	2	2	1	2024-12-21 11:00:00
+3	3	3	3	2024-12-20 12:30:00
+4	4	4	2	2024-12-20 13:15:00
+5	5	5	1	2024-12-20 14:45:00
+6	6	6	4	2024-12-19 09:00:00
+7	7	7	2	2024-12-19 10:30:00
+8	8	8	1	2024-12-19 11:45:00
+9	9	9	3	2024-12-19 12:20:00
+10	10	10	1	2024-12-18 15:30:00
+\.
+
+
+--
+-- TOC entry 4983 (class 0 OID 17240)
+-- Dependencies: 228
+-- Data for Name: coupons; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.coupons (coupon_id, code, discount_percentage, expiry_date, user_id, used_in_order_id) FROM stdin;
+1	DISCOUNT10	10.00	2025-01-01	1	\N
+2	SAVE15	15.00	2025-01-15	2	2
+3	FREEMEAL	100.00	2024-12-31	3	\N
+4	SUMMER20	20.00	2024-12-30	4	4
+5	WELCOME5	5.00	2025-02-01	5	\N
+6	HAPPYHOUR	25.00	2024-12-25	6	\N
+7	WINTER30	30.00	2025-01-31	7	\N
+8	LOYALTY50	50.00	2025-03-01	8	\N
+9	EXTRA10	10.00	2025-01-10	9	\N
+10	FLASHDEAL	40.00	2024-12-22	10	10
+\.
+
+
+--
+-- TOC entry 4985 (class 0 OID 17260)
+-- Dependencies: 230
+-- Data for Name: deals; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.deals (deal_id, restaurant_id, deal_description, start_date, end_date) FROM stdin;
+1	1	Buy 2 pizzas, get 1 free!	2024-12-20	2025-01-01
+2	2	Free fries with any burger.	2024-12-21	2025-01-15
+3	3	Sushi platter 20% off.	2024-12-22	2025-01-10
+4	4	Tacos for $1 on Tuesdays.	2024-12-20	2025-01-30
+5	5	Free garlic bread with pasta.	2024-12-20	2025-02-01
+6	6	Family BBQ meal discount.	2024-12-25	2025-01-31
+7	7	Free smoothie with every meal.	2024-12-22	2025-02-15
+8	8	10% off seafood platters.	2024-12-20	2025-01-31
+9	9	Free dessert with steak.	2024-12-24	2025-01-15
+10	10	Buy 1 pastry, get 1 free.	2024-12-20	2025-01-05
+\.
+
+
+--
+-- TOC entry 4995 (class 0 OID 17356)
+-- Dependencies: 240
+-- Data for Name: deliveryservices; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.deliveryservices (delivery_service_id, order_id, delivery_service_name, delivery_fee, estimated_delivery_time) FROM stdin;
+1	1	FastExpress	10.00	30-40 mins
+2	2	QuickDelivery	8.50	20-30 mins
+3	3	FoodDash	12.00	25-35 mins
+4	4	SafeRide	7.00	40-50 mins
+5	5	SpeedyEats	9.99	15-20 mins
+6	6	ExpressGrub	11.50	30-40 mins
+7	7	RapidBites	8.00	25-35 mins
+8	8	SwiftMeals	10.50	20-30 mins
+9	9	InstantFood	7.99	35-45 mins
+10	10	TastyRide	9.00	30-40 mins
+\.
+
+
+--
+-- TOC entry 4989 (class 0 OID 17300)
+-- Dependencies: 234
+-- Data for Name: favorites; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.favorites (favorite_id, user_id, restaurant_id, menu_id, favorite_added_at) FROM stdin;
+1	1	1	1	2024-12-21 08:00:00
+2	2	2	3	2024-12-21 09:00:00
+3	3	3	5	2024-12-20 17:30:00
+4	4	4	7	2024-12-19 12:00:00
+5	5	5	9	2024-12-18 10:00:00
+6	6	6	10	2024-12-20 11:45:00
+7	7	7	2	2024-12-19 15:00:00
+8	8	8	4	2024-12-18 13:30:00
+9	9	9	6	2024-12-21 14:20:00
+10	10	10	8	2024-12-19 16:45:00
+\.
+
+
+--
+-- TOC entry 4977 (class 0 OID 17191)
+-- Dependencies: 222
+-- Data for Name: meals; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.meals (meal_id, restaurant_id, meal_name, meal_description, meal_price, category) FROM stdin;
+1	1	Pepperoni Pizza	Classic pepperoni with cheese	12.99	Main Course
+2	1	Margherita Pizza	Fresh tomato and basil	10.99	Main Course
+3	2	Cheeseburger	Beef patty with cheese	9.99	Main Course
+4	2	Veggie Burger	Grilled veggies and avocado	8.99	Main Course
+5	3	California Roll	Crab and avocado sushi	7.99	Starter
+6	3	Tuna Sashimi	Slices of fresh tuna	11.99	Starter
+7	4	Chicken Tacos	Spicy chicken in a taco	3.99	Main Course
+8	4	Beef Tacos	Shredded beef with salsa	4.49	Main Course
+9	5	Spaghetti Carbonara	Creamy pasta with bacon	13.99	Main Course
+10	5	Penne Alfredo	Pasta with creamy alfredo sauce	12.49	Main Course
+\.
+
+
+--
+-- TOC entry 4981 (class 0 OID 17222)
+-- Dependencies: 226
+-- Data for Name: orderdetails; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.orderdetails (order_detail_id, order_id, meal_id, quantity, meal_price) FROM stdin;
+1	1	1	2	12.99
+2	1	2	1	10.99
+3	2	3	1	9.99
+4	2	4	1	8.99
+5	3	5	2	7.99
+6	3	6	1	11.99
+7	4	7	2	3.99
+8	4	8	1	4.49
+9	5	9	2	13.99
+10	5	10	1	12.49
+\.
+
+
+--
+-- TOC entry 4979 (class 0 OID 17205)
+-- Dependencies: 224
+-- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.orders (order_id, user_id, restaurant_id, order_date, total_amount, delivery_type, payment_method, status) FROM stdin;
+1	1	1	2024-12-21 12:30:00	25.98	Delivery	Card	Completed
+2	2	2	2024-12-21 13:00:00	18.98	Pickup	Cash	Completed
+3	3	3	2024-12-20 18:00:00	19.98	Delivery	Online Payment	Pending
+4	4	4	2024-12-20 19:30:00	8.48	Pickup	Card	Completed
+5	5	5	2024-12-19 20:00:00	26.48	Delivery	Cash	Cancelled
+6	6	6	2024-12-19 18:30:00	15.99	Delivery	Card	Completed
+7	7	7	2024-12-18 12:00:00	9.99	Pickup	Online Payment	Completed
+8	8	8	2024-12-18 13:15:00	16.99	Delivery	Card	Completed
+9	9	9	2024-12-21 14:45:00	22.99	Delivery	Cash	Completed
+10	10	10	2024-12-19 15:00:00	19.98	Pickup	Card	Completed
+\.
+
+
+--
+-- TOC entry 4993 (class 0 OID 17344)
+-- Dependencies: 238
+-- Data for Name: paymentinfo; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.paymentinfo (payment_id, user_id, card_number, card_holder_name, expiry_date, cvv_code) FROM stdin;
+1	1	4111111111111111	John Smith	2026-05-01	123
+2	2	4222222222222222	Alice Johnson	2025-10-01	456
+3	3	4333333333333333	Robert Brown	2027-08-01	789
+4	4	4444444444444444	Emily Davis	2024-12-01	012
+5	5	4555555555555555	Michael Wilson	2026-07-01	345
+6	6	4666666666666666	Sophia Garcia	2025-03-01	678
+7	7	4777777777777777	James Martinez	2026-11-01	901
+8	8	4888888888888888	Isabella Anderson	2027-04-01	234
+9	9	4999999999999999	Olivia Taylor	2025-06-01	567
+10	10	4000000000000000	William Harris	2026-09-01	890
+\.
+
+
+--
+-- TOC entry 4975 (class 0 OID 17182)
+-- Dependencies: 220
+-- Data for Name: restaurants; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.restaurants (restaurant_id, restaurant_name, restaurant_description, location, restaurant_rating, opening_hours, deal_title, deal_description, phone, restaurant_email) FROM stdin;
+1	Pizza Palace	Delicious handmade pizzas	Downtown	4.5	10:00-22:00	Free Drink	Get a free drink with every pizza	5551114444	info@pizzapalace.com
+2	Burger Barn	Best burgers in town	Main Street	4.3	11:00-23:00	Burger Deal	Buy 1, get 1 half off	5552225555	contact@burgerbarn.com
+3	Sushi Spot	Fresh sushi and sashimi	Market Square	4.7	12:00-21:00	Sushi Special	20% off on Fridays	5553336666	hello@sushispot.com
+4	Taco Town	Authentic Mexican tacos	Central Avenue	4.6	11:00-20:00	Taco Tuesday	Tacos for $1 on Tuesdays	5554447777	info@tacotown.com
+5	Pasta Paradise	Italian pasta dishes	River Road	4.4	12:00-22:00	Pasta Party	Kids eat free on weekends	5555558888	contact@pastaparadise.com
+6	BBQ Joint	Smoked barbecue	Hilltop Road	4.8	12:00-21:30	BBQ Feast	15% off orders over $50	5556669999	bbq@joint.com
+7	Veggie Delight	Vegan and vegetarian meals	Green Street	4.6	10:00-20:00	Healthy Deal	Free smoothie with salad	5557770000	hello@veggiedelight.com
+8	Seafood Shack	Fresh seafood dishes	Coastal Road	4.5	11:00-21:00	Seafood Sensation	10% off all orders	5558881111	info@seafoodshack.com
+9	Steakhouse Supreme	Premium steaks and sides	Main Boulevard	4.9	17:00-23:00	Steak Night	Free dessert with steak	5559992222	contact@steakhouse.com
+10	Dessert Dreams	Cakes and pastries	Sweet Lane	4.8	08:00-20:00	Sweet Deal	Buy 1, get 1 free	5550003333	hello@dessertdreams.com
+\.
+
+
+--
+-- TOC entry 4987 (class 0 OID 17274)
+-- Dependencies: 232
+-- Data for Name: reviews; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.reviews (review_id, user_id, restaurant_id, order_id, review_rating, review_comment, review_created_at) FROM stdin;
+1	1	1	1	4.5	Great pizza, loved the crust!	2024-12-21 13:00:00
+2	2	2	2	4.0	Tasty burger, fries could be better.	2024-12-21 14:00:00
+3	3	3	3	4.8	Fresh and delicious sushi.	2024-12-20 19:00:00
+4	4	4	4	4.2	Tacos were good but a bit spicy.	2024-12-20 20:00:00
+5	5	5	5	3.5	Pasta was okay, nothing special.	2024-12-19 21:00:00
+6	6	6	6	5.0	Best BBQ I have ever had!	2024-12-19 19:00:00
+7	7	7	\N	4.7	Healthy and delicious meals.	2024-12-18 13:00:00
+8	8	8	\N	4.3	Good seafood, slightly overpriced.	2024-12-18 14:00:00
+9	9	9	9	4.9	Steak was cooked perfectly.	2024-12-21 15:00:00
+10	10	10	10	5.0	Desserts were heavenly!	2024-12-19 16:00:00
+\.
+
+
+--
+-- TOC entry 4973 (class 0 OID 17170)
+-- Dependencies: 218
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (user_id, fullname, user_email, user_phone_number, password, user_created_at) FROM stdin;
+1	John Doe	john.doe@example.com	5551234567	password123	2024-12-21 08:00:00
+2	Jane Smith	jane.smith@example.com	5559876543	securepass456	2024-12-21 09:00:00
+3	Alice Brown	alice.brown@example.com	5555551212	mypassword789	2024-12-20 17:30:00
+4	Bob Johnson	bob.johnson@example.com	5553334444	password111	2024-12-19 12:00:00
+5	Charlie Davis	charlie.davis@example.com	5551112222	ilovecoding	2024-12-18 10:00:00
+6	Emily Clark	emily.clark@example.com	5554443333	pass1234	2024-12-20 11:45:00
+7	Daniel Lee	daniel.lee@example.com	5558887777	testpass	2024-12-19 15:00:00
+8	Grace Hill	grace.hill@example.com	5559990000	gracefulpass	2024-12-18 13:30:00
+9	Henry Scott	henry.scott@example.com	5556665555	mypassword222	2024-12-21 14:20:00
+10	Sophia Taylor	sophia.taylor@example.com	5554448888	secureme999	2024-12-19 16:45:00
+11	hakan	hakan@gmail.com	111	admin	2025-01-05 17:49:35.184024
+12	ahmet	ahmet@gmail.com	111	admin	2025-01-05 17:57:06.219714
+\.
+
+
+--
+-- TOC entry 5016 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: address_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.address_address_id_seq', 10, true);
+
+
+--
+-- TOC entry 5017 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: cart_cart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cart_cart_id_seq', 10, true);
+
+
+--
+-- TOC entry 5018 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: coupons_coupon_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.coupons_coupon_id_seq', 10, true);
+
+
+--
+-- TOC entry 5019 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: deals_deal_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.deals_deal_id_seq', 10, true);
+
+
+--
+-- TOC entry 5020 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: deliveryservices_delivery_service_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.deliveryservices_delivery_service_id_seq', 10, true);
+
+
+--
+-- TOC entry 5021 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: favorites_favorite_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.favorites_favorite_id_seq', 10, true);
+
+
+--
+-- TOC entry 5022 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: meals_meal_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.meals_meal_id_seq', 10, true);
+
+
+--
+-- TOC entry 5023 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: orderdetails_order_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.orderdetails_order_detail_id_seq', 10, true);
+
+
+--
+-- TOC entry 5024 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: orders_order_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.orders_order_id_seq', 10, true);
+
+
+--
+-- TOC entry 5025 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: paymentinfo_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.paymentinfo_payment_id_seq', 10, true);
+
+
+--
+-- TOC entry 5026 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: restaurants_restaurant_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.restaurants_restaurant_id_seq', 10, true);
+
+
+--
+-- TOC entry 5027 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: reviews_review_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.reviews_review_id_seq', 10, true);
+
+
+--
+-- TOC entry 5028 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_user_id_seq', 12, true);
+
+
+--
+-- TOC entry 4807 (class 2606 OID 17377)
+-- Name: address address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.address
+    ADD CONSTRAINT address_pkey PRIMARY KEY (address_id);
+
+
+--
+-- TOC entry 4801 (class 2606 OID 17332)
+-- Name: cart cart_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart
+    ADD CONSTRAINT cart_pkey PRIMARY KEY (cart_id);
+
+
+--
+-- TOC entry 4789 (class 2606 OID 17248)
+-- Name: coupons coupons_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coupons
+    ADD CONSTRAINT coupons_code_key UNIQUE (code);
+
+
+--
+-- TOC entry 4791 (class 2606 OID 17246)
+-- Name: coupons coupons_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coupons
+    ADD CONSTRAINT coupons_pkey PRIMARY KEY (coupon_id);
+
+
+--
+-- TOC entry 4793 (class 2606 OID 17267)
+-- Name: deals deals_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.deals
+    ADD CONSTRAINT deals_pkey PRIMARY KEY (deal_id);
+
+
+--
+-- TOC entry 4805 (class 2606 OID 17363)
+-- Name: deliveryservices deliveryservices_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.deliveryservices
+    ADD CONSTRAINT deliveryservices_pkey PRIMARY KEY (delivery_service_id);
+
+
+--
+-- TOC entry 4797 (class 2606 OID 17306)
+-- Name: favorites favorites_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.favorites
+    ADD CONSTRAINT favorites_pkey PRIMARY KEY (favorite_id);
+
+
+--
+-- TOC entry 4799 (class 2606 OID 17308)
+-- Name: favorites favorites_user_id_restaurant_id_menu_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.favorites
+    ADD CONSTRAINT favorites_user_id_restaurant_id_menu_id_key UNIQUE (user_id, restaurant_id, menu_id);
+
+
+--
+-- TOC entry 4783 (class 2606 OID 17198)
+-- Name: meals meals_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.meals
+    ADD CONSTRAINT meals_pkey PRIMARY KEY (meal_id);
+
+
+--
+-- TOC entry 4787 (class 2606 OID 17228)
+-- Name: orderdetails orderdetails_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orderdetails
+    ADD CONSTRAINT orderdetails_pkey PRIMARY KEY (order_detail_id);
+
+
+--
+-- TOC entry 4785 (class 2606 OID 17210)
+-- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_pkey PRIMARY KEY (order_id);
+
+
+--
+-- TOC entry 4803 (class 2606 OID 17349)
+-- Name: paymentinfo paymentinfo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.paymentinfo
+    ADD CONSTRAINT paymentinfo_pkey PRIMARY KEY (payment_id);
+
+
+--
+-- TOC entry 4781 (class 2606 OID 17189)
+-- Name: restaurants restaurants_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.restaurants
+    ADD CONSTRAINT restaurants_pkey PRIMARY KEY (restaurant_id);
+
+
+--
+-- TOC entry 4795 (class 2606 OID 17283)
+-- Name: reviews reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_pkey PRIMARY KEY (review_id);
+
+
+--
+-- TOC entry 4777 (class 2606 OID 17178)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
+
+
+--
+-- TOC entry 4779 (class 2606 OID 17180)
+-- Name: users users_user_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_user_email_key UNIQUE (user_email);
+
+
+--
+-- TOC entry 4826 (class 2606 OID 17378)
+-- Name: address address_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.address
+    ADD CONSTRAINT address_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 4822 (class 2606 OID 17338)
+-- Name: cart cart_meal_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart
+    ADD CONSTRAINT cart_meal_id_fkey FOREIGN KEY (meal_id) REFERENCES public.meals(meal_id);
+
+
+--
+-- TOC entry 4823 (class 2606 OID 17333)
+-- Name: cart cart_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart
+    ADD CONSTRAINT cart_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 4813 (class 2606 OID 17254)
+-- Name: coupons coupons_used_in_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coupons
+    ADD CONSTRAINT coupons_used_in_order_id_fkey FOREIGN KEY (used_in_order_id) REFERENCES public.orders(order_id);
+
+
+--
+-- TOC entry 4814 (class 2606 OID 17249)
+-- Name: coupons coupons_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coupons
+    ADD CONSTRAINT coupons_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 4815 (class 2606 OID 17268)
+-- Name: deals deals_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.deals
+    ADD CONSTRAINT deals_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(restaurant_id);
+
+
+--
+-- TOC entry 4825 (class 2606 OID 17364)
+-- Name: deliveryservices deliveryservices_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.deliveryservices
+    ADD CONSTRAINT deliveryservices_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(order_id);
+
+
+--
+-- TOC entry 4819 (class 2606 OID 17319)
+-- Name: favorites favorites_menu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.favorites
+    ADD CONSTRAINT favorites_menu_id_fkey FOREIGN KEY (menu_id) REFERENCES public.meals(meal_id);
+
+
+--
+-- TOC entry 4820 (class 2606 OID 17314)
+-- Name: favorites favorites_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.favorites
+    ADD CONSTRAINT favorites_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(restaurant_id);
+
+
+--
+-- TOC entry 4821 (class 2606 OID 17309)
+-- Name: favorites favorites_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.favorites
+    ADD CONSTRAINT favorites_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 4808 (class 2606 OID 17199)
+-- Name: meals meals_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.meals
+    ADD CONSTRAINT meals_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(restaurant_id);
+
+
+--
+-- TOC entry 4811 (class 2606 OID 17234)
+-- Name: orderdetails orderdetails_meal_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orderdetails
+    ADD CONSTRAINT orderdetails_meal_id_fkey FOREIGN KEY (meal_id) REFERENCES public.meals(meal_id);
+
+
+--
+-- TOC entry 4812 (class 2606 OID 17229)
+-- Name: orderdetails orderdetails_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orderdetails
+    ADD CONSTRAINT orderdetails_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(order_id);
+
+
+--
+-- TOC entry 4809 (class 2606 OID 17216)
+-- Name: orders orders_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(restaurant_id);
+
+
+--
+-- TOC entry 4810 (class 2606 OID 17211)
+-- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 4824 (class 2606 OID 17350)
+-- Name: paymentinfo paymentinfo_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.paymentinfo
+    ADD CONSTRAINT paymentinfo_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 4816 (class 2606 OID 17294)
+-- Name: reviews reviews_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(order_id);
+
+
+--
+-- TOC entry 4817 (class 2606 OID 17289)
+-- Name: reviews reviews_restaurant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(restaurant_id);
+
+
+--
+-- TOC entry 4818 (class 2606 OID 17284)
+-- Name: reviews reviews_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+-- Completed on 2025-01-05 18:08:18
+
+--
+-- PostgreSQL database dump complete
+--
+
