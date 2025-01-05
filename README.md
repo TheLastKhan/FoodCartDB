@@ -1,7 +1,7 @@
 # FoodCartDB
 
 ### Main Menu
-![Main Menu](FoodCart/screenshots/Main Menu.png)
+![Main Menu](FoodCart/screenshots/Menu.png)
 
 ### Query
 ![Query](FoodCart/screenshots/Query.png)
